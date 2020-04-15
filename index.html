@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <title>My Web</title>
+</head>
+<body class="container">
+  <div class="row mx-auto pt-5">
+    <div class="col-md-12 text-center ">
+      <h3>Welcome</h3>
+     <span>Bitcoin price <p id="demo"></p></span> 
+    </div>
+    <canvas id="myChart"></canvas>
+
+  </div>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</html>
+
+<script> 
+ //getBTC2() // function
+const btcDates=[]
+const btcPrices=[]
+getBTC2();
+chartIt();
+
+
+setInterval(function(){ 
+getBTC2();
+chartIt();
+}, 30000);
+//
+
+  
+async function chartIt(){
+  await getBTC2();
+  const ctx = document.getElementById('myChart').getContext('2d'); 
+  const chart = new Chart(ctx, {
+  // The type of chart we want to create
+  type: 'line',
+  // The data for our dataset
+  data: {
+    labels: btcDates,
+    datasets: [{
+        label: 'My First dataset',
+        backgroundColor: 'rgb(255, 99, 132)',
+        borderColor: 'rgb(255, 99, 132)',
+        data: btcPrices,
+    }]
+  },
+    options: {}
+});
+}
+
+function getBTC2(){
+  axios({
+  method: 'get',
+  url: 'https://quote.coins.ph/v1/markets/BTC-PHP',
+  })
+  .then(function (response) {
+    data=response.data.market //object
+    this.BtcPrice=data.ask
+    document.getElementById("demo").innerHTML = BtcPrice;
+    var today = new Date();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds(); 
+    var lastChart = btcPrices[btcPrices.length - 1]
+    btcDates.push(time)
+    btcPrices.push(BtcPrice)
+    
+  });
+
+  }
+
+</script>
