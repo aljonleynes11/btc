@@ -7,11 +7,11 @@
 
   <title>My Web</title>
 </head>
-<body class="container-fluid">
+<body class="container">
   <div class="row mx-auto">
     <div class="col-md-12 text-center ">
-  
-     <h4>Bitcoin price <p id="demo"></p></h4> 
+    <h4>Last Bitcoin Price: <p id="Previous"></p></h4>
+    <h4>Current Bitcoin Price <p id="Current"></p></h4> 
     </div>
     <canvas id="myChart"></canvas>
 
@@ -32,14 +32,17 @@ const btcDates=[]
 const btcPriceSell=[]
 const btcPriceBuy=[]
 const btcHistory=[]
+const philPeso=[]
 getBTC2();
 chartIt();
-
+document.getElementById("Previous").style.display="hidden"
 
 setInterval(function(){ 
 getBTC2();
 chartIt();
-}, 30000);
+
+
+}, 10000);
 //
 
 
@@ -54,23 +57,24 @@ async function chartIt(){
   data: {
     labels: btcDates,
     datasets: [{
-        label: 'BTC to PHP(Buy)',
-        backgroundColor: 'rgb(255, 99, 132)',
-        borderColor: 'rgb(255, 99, 132)',
-        fill: false,
-        borderWidth: 1,
-        data: btcPriceSell,
+      label: 'BTC to PHP(Buy)',
+      backgroundColor: 'rgb(255, 99, 132)',
+      borderColor: 'rgb(255, 99, 132)',
+      fill:false,
+      borderWidth: 3,
+      data: btcPriceSell,
     },
     {
-    label: 'BTC to PHP(Buy)',
-        
-        borderColor: 'blue',
-        fill: false,
-        borderWidth: 1,
-        data: btcPriceBuy,
+      label: 'BTC to PHP(Sell)',
+      backgroundColor: 'blue',
+      fill:false,
+      borderColor: 'blue',
+      borderWidth: 3,
+      data: btcPriceBuy,
       }]},
   
     options: {
+      responsive: true,
   scales: {
             yAxes: [{
                 ticks: {
@@ -85,28 +89,33 @@ async function chartIt(){
 }
 });
 
-
 }
 
-
 function getBTC2(){
-  //const d = moment().subtract(10, 'days').calendar()
-  //d.format('MM/DD/YYYY')
-  const daysAgo = moment().subtract(2, 'days').format('YYYY-MM-DD');
-  const daysNow = moment().format('YYYY-MM-DD');
-  var req1 = 'https://api.coindesk.com/v1/bpi/historical/close.json?start='+daysAgo+'&end='+daysNow
+  // const daysAgo = moment().subtract(2, 'days').format('YYYY-MM-DD');
+  // const dayAgo = moment().subtract(1, 'days').format('YYYY-MM-DD');
+  // const daysNow = moment().format('YYYY-MM-DD');
+  // var req1 = 'https://api.coindesk.com/v1/bpi/historical/close.json?start='+daysAgo+'&end='+daysNow
+  // axios({
+  // method: 'get',
+  // url: req1
+  // })
+  // .then(function (response) {
+  // console.log(response.data.bpi[daysAgo])
+  // btcsAgo=response.data.bpi[daysAgo]
+  // // btcHistory.push()
+  // });
 
-  axios({
-  method: 'get',
-  url: req1
-  })
-  .then(function (response) {
-    console.log(response)
-  btcHistory.push(response.data.bpi)
+   axios({
+   method: 'get',
+   url: 'https://quote.coins.ph/v1/markets'
+   })
+   .then(function (response) {
+    var x1 = response.data.markets[18].bid
+    var x2 = response.data.markets[18].ask
  
-  });
-
-  
+   });
+ 
   axios({
   method: 'get',
   url: 'https://quote.coins.ph/v1/markets/BTC-PHP',
@@ -115,12 +124,24 @@ function getBTC2(){
     data=response.data.market //object
     this.BtcPriceSell=data.ask
     this.BtcPriceBuy=data.bid
-    document.getElementById("demo").innerHTML =' Buy: '+  BtcPriceSell + ' - Sell: ' + BtcPriceBuy;
+    document.getElementById("Current").innerHTML =' Buy: '+  BtcPriceSell + ' - Sell: ' + BtcPriceBuy;
     var time = moment().format('hh:mm a');
+
+    
+    var lastBtcSell = btcPriceSell[btcPriceSell.length - 1]
+
+    if (BtcPriceSell!=lastBtcSell)
+    {
     btcDates.push(time)
     btcPriceSell.push(BtcPriceSell)
     btcPriceBuy.push(BtcPriceBuy)
+    }
+
+     if(btcPriceSell.length>=2)
+     {
+      document.getElementById("Previous").innerHTML =' Buy: '+  btcPriceSell[btcPriceSell.length - 2] + ' - Sell: ' + btcPriceBuy[btcPriceBuy.length - 2];
     
+     }
   });
 
   }
