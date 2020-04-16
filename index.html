@@ -12,8 +12,12 @@
     <div class="col-md-12 text-center ">
     <h4>Last Bitcoin Price: <p id="Previous"></p></h4>
     <h4>Current Bitcoin Price <p id="Current"></p></h4> 
-    </div>
     <canvas id="myChart"></canvas>
+    
+
+    <p id="table"></p>
+    </div>
+  
 
   </div>
 </body>
@@ -33,16 +37,16 @@ const btcPriceSell=[]
 const btcPriceBuy=[]
 const btcHistory=[]
 const philPeso=[]
-getBTC2();
+
 chartIt();
 document.getElementById("Previous").style.display="hidden"
 
 setInterval(function(){ 
-getBTC2();
+
 chartIt();
 
 
-}, 10000);
+}, 2000);
 //
 
 
@@ -140,10 +144,27 @@ function getBTC2(){
      if(btcPriceSell.length>=2)
      {
       document.getElementById("Previous").innerHTML =' Buy: '+  btcPriceSell[btcPriceSell.length - 2] + ' - Sell: ' + btcPriceBuy[btcPriceBuy.length - 2];
-    
      }
+
+     if(btcPriceSell.length>15)
+     {
+       // || (btcPriceBuy.length>3) || (btcDates.length>3))
+        btcPriceSell.shift(5)
+        btcDates.shift(5)
+        btcPriceBuy.shift(5)
+      console.log(btcPriceBuy.length + btcPriceSell.length + btcDates.length)
+     }
+    
   });
+//   btcPriceSell.forEach(table)
+// function table(item, index){
+//   var t1=document.getElementById("table")
+//   t1=innerHTML='';
+//   document.getElementById("table").innerHTML = index + " : " + item + "<br>";
+//   console.log(btcPriceSell)
+// }
 
   }
 
+ 
 </script>
