@@ -2,31 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" conAgot="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
   <title>My Web</title>
 </head>
-<body class="container">
-  <div class="row mx-auto pt-5">
+<body class="container-fluid">
+  <div class="row mx-auto">
     <div class="col-md-12 text-center ">
-      <h3>Welcome</h3>
-     <span>Bitcoin price <p id="demo"></p></span> 
+  
+     <h4>Bitcoin price <p id="demo"></p></h4> 
     </div>
     <canvas id="myChart"></canvas>
 
   </div>
 </body>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
 </html>
 
 <script> 
  //getBTC2() // function
 const btcDates=[]
-const btcPrices=[]
+const btcPriceSell=[]
+const btcPriceBuy=[]
+const btcHistory=[]
 getBTC2();
 chartIt();
 
@@ -36,6 +41,7 @@ getBTC2();
 chartIt();
 }, 30000);
 //
+
 
   
 async function chartIt(){
@@ -48,30 +54,72 @@ async function chartIt(){
   data: {
     labels: btcDates,
     datasets: [{
-        label: 'My First dataset',
+        label: 'BTC to PHP(Buy)',
         backgroundColor: 'rgb(255, 99, 132)',
         borderColor: 'rgb(255, 99, 132)',
-        data: btcPrices,
-    }]
-  },
-    options: {}
+        fill: false,
+        borderWidth: 1,
+        data: btcPriceSell,
+    },
+    {
+    label: 'BTC to PHP(Buy)',
+        
+        borderColor: 'blue',
+        fill: false,
+        borderWidth: 1,
+        data: btcPriceBuy,
+      }]},
+  
+    options: {
+  scales: {
+            yAxes: [{
+                ticks: {
+                },
+                scaleLabel: {
+                     display: true,
+                     labelString: 'BTC to PHP',
+                     fontSize: 20 
+                  }
+            }]            
+        }  
+}
 });
+
+
 }
 
+
 function getBTC2(){
+  //const d = moment().subtract(10, 'days').calendar()
+  //d.format('MM/DD/YYYY')
+  const daysAgo = moment().subtract(2, 'days').format('YYYY-MM-DD');
+  const daysNow = moment().format('YYYY-MM-DD');
+  var req1 = 'https://api.coindesk.com/v1/bpi/historical/close.json?start='+daysAgo+'&end='+daysNow
+
+  axios({
+  method: 'get',
+  url: req1
+  })
+  .then(function (response) {
+    console.log(response)
+  btcHistory.push(response.data.bpi)
+ 
+  });
+
+  
   axios({
   method: 'get',
   url: 'https://quote.coins.ph/v1/markets/BTC-PHP',
   })
   .then(function (response) {
     data=response.data.market //object
-    this.BtcPrice=data.ask
-    document.getElementById("demo").innerHTML = BtcPrice;
-    var today = new Date();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds(); 
-    var lastChart = btcPrices[btcPrices.length - 1]
+    this.BtcPriceSell=data.ask
+    this.BtcPriceBuy=data.bid
+    document.getElementById("demo").innerHTML =' Buy: '+  BtcPriceSell + ' - Sell: ' + BtcPriceBuy;
+    var time = moment().format('hh:mm a');
     btcDates.push(time)
-    btcPrices.push(BtcPrice)
+    btcPriceSell.push(BtcPriceSell)
+    btcPriceBuy.push(BtcPriceBuy)
     
   });
 
