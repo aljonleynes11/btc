@@ -16,6 +16,7 @@
     
 
     <p id="table"></p>
+    <p id="balance"> My Balance</p>
     </div>
   
 
@@ -37,7 +38,8 @@ const btcPriceSell=[]
 const btcPriceBuy=[]
 const btcHistory=[]
 const philPeso=[]
-
+var myBalance=0.06774825
+var myTotal=0.00;
 chartIt();
 document.getElementById("Previous").style.display="hidden"
 
@@ -139,6 +141,8 @@ function getBTC2(){
     btcDates.push(time)
     btcPriceSell.push(BtcPriceSell)
     btcPriceBuy.push(BtcPriceBuy)
+    myTotal =  myBalance * BtcPriceBuy
+    document.getElementById("balance").innerHTML = 'My Balance : ' + parseFloat(myTotal);
     }
 
      if(btcPriceSell.length>=2)
@@ -154,7 +158,8 @@ function getBTC2(){
         btcPriceBuy.shift(5)
       console.log(btcPriceBuy.length + btcPriceSell.length + btcDates.length)
      }
-    
+
+
   });
 //   btcPriceSell.forEach(table)
 // function table(item, index){
@@ -163,6 +168,8 @@ function getBTC2(){
 //   document.getElementById("table").innerHTML = index + " : " + item + "<br>";
 //   console.log(btcPriceSell)
 // }
+
+
 
   }
 
