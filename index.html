@@ -17,6 +17,9 @@
 
     <p id="table"></p>
     <p id="balance"> My Balance</p>
+    <audio id="myAudio">
+      <source src="excuseme.mp3" type="audio/mpeg">
+    </audio>
     </div>
   
 
@@ -38,9 +41,11 @@ const btcPriceSell=[]
 const btcPriceBuy=[]
 const btcHistory=[]
 const philPeso=[]
-var myBalance=0.06774825
+var myBalance=0;
 var myTotal=0.00;
 chartIt();
+onetime();
+getBTC2();
 document.getElementById("Previous").style.display="hidden"
 
 setInterval(function(){ 
@@ -96,7 +101,28 @@ async function chartIt(){
 });
 
 }
+function notify(){
+  console.log(myBalance);
+    var x = document.getElementById("myAudio");
+    var playPromise = x.play();
+    if(myTotal<=24000)
+   {
+if (playPromise !== undefined) {
+  playPromise.then(_ => {
+    x.play();
+  })
+  .catch(error => {
+    // Auto-play was prevented
+    // Show paused UI.
+  });
+}
+  
 
+  
+
+   }
+
+}
 function getBTC2(){
   // const daysAgo = moment().subtract(2, 'days').format('YYYY-MM-DD');
   // const dayAgo = moment().subtract(1, 'days').format('YYYY-MM-DD');
@@ -111,6 +137,10 @@ function getBTC2(){
   // btcsAgo=response.data.bpi[daysAgo]
   // // btcHistory.push()
   // });
+
+
+
+
 
    axios({
    method: 'get',
@@ -138,11 +168,12 @@ function getBTC2(){
 
     if (BtcPriceSell!=lastBtcSell)
     {
-    btcDates.push(time)
+      btcDates.push(time)
     btcPriceSell.push(BtcPriceSell)
     btcPriceBuy.push(BtcPriceBuy)
     myTotal =  myBalance * BtcPriceBuy
     document.getElementById("balance").innerHTML = 'My Balance : ' + parseFloat(myTotal);
+// notify();
     }
 
      if(btcPriceSell.length>=2)
@@ -159,7 +190,6 @@ function getBTC2(){
       console.log(btcPriceBuy.length + btcPriceSell.length + btcDates.length)
      }
 
-
   });
 //   btcPriceSell.forEach(table)
 // function table(item, index){
@@ -173,5 +203,17 @@ function getBTC2(){
 
   }
 
- 
+function onetime(){
+  axios({
+   method: 'get',
+   url: 'file.json'
+   })
+.then(function (response) {
+ myBalance=response.data.btcbalance
+   });
+//try lang hehe
+}
+function startup(){
+
+}
 </script>
